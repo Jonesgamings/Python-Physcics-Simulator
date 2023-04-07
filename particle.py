@@ -6,8 +6,10 @@ class Particle:
     VECTOR_SCALAR = 3
     DEBUG = True
     COLLISIONS = True
+    GRAVITY = True
     DRAG = 0.9999
     ENERGY_LOSS = 0.85
+    GRAVITY_DIRECTION = 1.5 * math.pi
     
     def __init__(self, radius, x, y, colour = (0, 0, 0), speed = 0, direction = 0, mass = 1):
         self.radius = radius #m
@@ -86,5 +88,4 @@ class Particle:
         if self.y > screen_height - self.radius:
             self.y = screen_height - self.radius
             self.direction = math.atan2(-vy, vx)
-            self.speed *= Particle.ENERGY_LOSS
-          
+            self.speed *= Particle.ENERGY_LOSS     

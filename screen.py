@@ -3,6 +3,7 @@ import math
 import particle
 import time
 import random
+import numpy
 
 WHITE = (255, 255, 255)
 
@@ -24,24 +25,27 @@ class Screen:
         self.selected_particle = None
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 24)
-        self.FPS = 200
+        self.FPS = 60
         self.average_FPS = self.FPS
         self.clock_fps = self.FPS
         
-    def collide(self, particle1, particle2):
-        pass
+    def collide(self, p1, p2):
+        vy1, vx1 = p1.get_velocity()
+        vy2, vx2 = p1.get_velocity()
+        p1.direction = math.atan2(vy2, vx2)
+        p2.direction = math.atan2(vy1, vx1)
         
     def particle_loop(self, dt):
         for index, particle_ in enumerate(self.particles):
             if not self.paused:
-                particle_.apply_vector(1.5 * math.pi, -9.81 * dt / self.clock_fps)
+                if particle.Particle.GRAVITY: particle_.apply_vector(particle.Particle.GRAVITY_DIRECTION, particle.Particle.GRAVITY * dt / self.clock_fps)
                 particle_.move(dt)
                 particle_.bounce(self.width, self.height)
                 
                 if particle.Particle.COLLISIONS:
                     for particle2 in self.particles[index + 1:]:
-                        if particle.collide_particle(particle2):
-                            self.collide(particle, particle2)
+                        if particle_.collide_particle(particle2):
+                            self.collide(particle_, particle2)
                     
             particle_.draw(self.screen)
                     
@@ -131,6 +135,11 @@ class Screen:
 if __name__ == "__main__":
     particle.Particle.DEBUG = True
     particle.Particle.COLLISIONS = False
+    particle.Particle.DRAG = 0.9999
+    particle.Particle.ENERGY_LOSS = 0.85
+    particle.Particle.GRAVITY = -9.80665
+    particle.Particle.GRAVITY_DIRECTION = 1.5 * math.pi
+    particle.Particle.VECTOR_SCALAR = 5
     screen = Screen()
-    screen.generate_random_particles(100, (5, 10), (1, 5), (1, 5))
+    screen.generate_random_particles(1000, (5, 10), (1, 5), (1, 1))
     screen.mainloop()
